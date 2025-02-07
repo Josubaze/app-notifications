@@ -10,5 +10,10 @@ const server = http.createServer(app);
 const httpServer = server.listen(PORT);
 console.log('Listening on port', PORT);
 
-const io = new WebSocketServer(httpServer);
+const io = new WebSocketServer(httpServer, {
+    cors: {
+        origin: "*", 
+        methods: ["GET", "POST"]
+    }
+});
 socket(io);
