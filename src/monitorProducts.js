@@ -1,8 +1,7 @@
-import Product from './models/product.schema';
 import Notification from './models/notification.schema';
-import User from './models/user.schema'; // Importamos el modelo de usuario
+import User from './models/user.schema'; // Asumo que tienes un modelo para los usuarios
 
-export const monitorProducts = async () => {
+export const monitorProducts = async (io) => {
   const productChangeStream = Product.watch();
 
   productChangeStream.on('change', async (change) => {
@@ -11,12 +10,13 @@ export const monitorProducts = async () => {
         const updatedProduct = await Product.findById(change.documentKey._id);
         if (updatedProduct.quantity < updatedProduct.minStock) {
           const message = `El producto ${updatedProduct.name} está por debajo del stock mínimo.`;
-          
+
           // Obtenemos todos los usuarios
           const users = await User.find();
 
-          // Creamos una notificación para cada usuario si no existe ya una con el mismo mensaje para ese producto
+          // Para cada usuario...
           for (const user of users) {
+            // Verificamos si ya existe la notificación
             const existingNotification = await Notification.findOne({
               product: updatedProduct._id,
               user: user._id,
@@ -28,9 +28,15 @@ export const monitorProducts = async () => {
                 product: updatedProduct._id,
                 user: user._id,
                 message,
-                seen: false, // Asignamos false o el valor por defecto que consideres
+                seen: false,
               });
               console.log(`Notificación creada para el producto ${updatedProduct.name} para el usuario ${user.username}`);
+
+              // Obtenemos las notificaciones actualizadas para este usuario
+              const notifications = await Notification.find({ user: user._id });
+              
+              // Emitimos el evento solo a la sala de este usuario
+              io.to(user._id.toString()).emit("userNotifications", notifications);
             } else {
               console.log(`Ya existe una notificación para el producto ${updatedProduct.name} para el usuario ${user.username}`);
             }

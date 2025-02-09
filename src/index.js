@@ -19,5 +19,5 @@ const io = new WebSocketServer(httpServer, {
 });
 
 
-monitorProducts();
+monitorProducts(io);
 socket(io);
