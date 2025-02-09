@@ -5,11 +5,20 @@ export default (io) => {
     console.log(`Usuario conectado: ${socket.id}`);
 
 
-    // Escucha para unir al usuario a su sala
-    socket.on('join', (userId) => {
+    socket.on('join', async (userId) => {
       socket.join(userId);
       console.log(`Socket ${socket.id} se unió a la sala ${userId}`);
+    
+      try {
+        // Obtener las notificaciones del usuario inmediatamente después de unirse
+        const notifications = await Notification.find({ user: userId });
+        socket.emit('userNotifications', notifications);
+      } catch (error) {
+        console.error('Error al obtener las notificaciones iniciales:', error);
+        socket.emit('error', { message: 'Error al obtener las notificaciones iniciales.' });
+      }
     });
+    
 
     // Evento para marcar una notificación como vista
     socket.on('markNotificationAsSeen', async (notificationId, userId) => {
