@@ -1,5 +1,6 @@
 import Notification from './models/notification.schema';
 import User from './models/user.schema'; // Asumo que tienes un modelo para los usuarios
+import Product from './models/product.schema';
 
 export const monitorProducts = async (io) => {
   const productChangeStream = Product.watch();
