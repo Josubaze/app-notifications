@@ -12,19 +12,17 @@ export default (io) => {
     });
 
     // Evento para marcar una notificación como vista
-    socket.on('markNotificationAsSeen', async (data) => {
-      // Se espera que 'data' contenga el 'notificationId' y el 'userId'
-      const { _id, user } = data;
+    socket.on('markNotificationAsSeen', async (notificationId, userId) => {
       try {
         await Notification.findByIdAndUpdate(
-          _id,
+          notificationId,
           { seen: true, seenAt: new Date() },
           { new: true }
         );
         // Tras actualizar la notificación, se obtienen todas las notificaciones actualizadas del usuario
-        const notifications = await Notification.find({ user: user });
+        const notifications = await Notification.find({ user: userId });
         // Emite el evento a la sala del usuario, de forma que todos sus clientes conectados reciban la actualización
-        io.to(user).emit('userNotifications', notifications);
+        io.to(userId).emit('userNotifications', notifications);
       } catch (error) {
         console.error('Error al actualizar la notificación:', error);
         socket.emit('error', { message: 'Error al actualizar la notificación.' });
