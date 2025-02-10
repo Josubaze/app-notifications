@@ -19,6 +19,8 @@ export const monitors = async (io) => {
           for (const user of users) {
             const existingNotification = await Notification.findOne({
               identifier: updatedProduct._id,
+              user: user._id,
+              message,
             });
 
             if (!existingNotification) {
