@@ -38,17 +38,6 @@ export default (io) => {
       }
     });
 
-    // Evento para obtener las notificaciones de un usuario
-    socket.on('getUserNotifications', async (userId) => {
-      try {
-        const notifications = await Notification.find({ user: userId });
-        socket.emit('userNotifications', notifications);
-      } catch (error) {
-        console.error('Error al obtener las notificaciones:', error);
-        socket.emit('error', { message: 'Error al obtener las notificaciones.' });
-      }
-    });
-
 
     // Evento de desconexión
     socket.on('disconnect', () => {

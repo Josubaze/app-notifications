@@ -4,7 +4,7 @@ import http from "http";
 import { connectDB } from './db'
 import socket  from "./socket";
 import { PORT } from './config';
-import { monitorProducts } from './monitorProducts';
+import { monitors } from './monitors';
 
 connectDB();
 const server = http.createServer(app);
@@ -19,5 +19,5 @@ const io = new WebSocketServer(httpServer, {
 });
 
 
-monitorProducts(io);
+monitors(io);
 socket(io);
