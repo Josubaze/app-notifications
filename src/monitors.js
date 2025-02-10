@@ -18,9 +18,7 @@ export const monitors = async (io) => {
 
           for (const user of users) {
             const existingNotification = await Notification.findOne({
-              product: updatedProduct._id,
-              user: user._id,
-              message,
+              identifier: updatedProduct._id,
             });
 
             if (!existingNotification) {
@@ -49,9 +47,9 @@ export const monitors = async (io) => {
       try {
         const newOrder = change.fullDocument;
         const message = `Nueva Orden de Ejecución creada: Nº${newOrder.form.num}`;
-        const users = await User.find();
+        const leaders = await User.find({ role: "lider" });
 
-        for (const user of users) {
+        for (const user of leaders) {
           await Notification.create({
             identifier: newOrder._id,
             user: user._id,
