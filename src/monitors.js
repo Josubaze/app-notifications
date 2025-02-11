@@ -227,7 +227,7 @@ export const monitors = async (io) => {
         const updatedPurchaseOrder = await PurchaseOrder.findById(change.documentKey._id);
 
         if (updatedPurchaseOrder.state === 'Recibido') {
-          const message = `La Orden de Compra Nº${updatedPurchaseOrder._id} ha sido recibida.`;
+          const message = `La Orden de Compra Nº${updatedPurchaseOrder.form.num} ha sido recibida.`;
           const users = await User.find();
 
           for (const user of users) {
